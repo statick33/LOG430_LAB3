@@ -1,6 +1,12 @@
-package ca.etsmtl.log430.lab3;
+package ca.etsmtl.log430.lab3b;
 
 import java.io.PipedWriter;
+
+import ca.etsmtl.log430.lab3b.FileReaderFilter;
+import ca.etsmtl.log430.lab3b.FileWriterFilter;
+import ca.etsmtl.log430.lab3b.MergeFilter;
+import ca.etsmtl.log430.lab3b.StateFilter;
+import ca.etsmtl.log430.lab3b.StatusFilter;
 
 /**
  * This class contains the main method for assignment 3. The program
@@ -45,12 +51,12 @@ public class SystemInitialize {
 		// Let's make sure that input and output files are provided on the
 		// command line
 
-		if (argv.length != 2) {
+		if (argv.length != 3) {
 
 			System.out
 					.println("\n\nNombre incorrect de parametres d'entree. Utilisation:");
 			System.out
-					.println("\njava SystemInitialize <fichier d'entree> <fichier de sortie>");
+					.println("\njava SystemInitialize <fichier d'entree> <fichier de sortie 1> <fichier de sortie 2>");
 
 		} else {
 			// These are the declarations for the pipes.
@@ -60,22 +66,35 @@ public class SystemInitialize {
 			PipedWriter pipe04 = new PipedWriter();
 			PipedWriter pipe05 = new PipedWriter();
 			PipedWriter pipe06 = new PipedWriter();
+			PipedWriter pipe07 = new PipedWriter();
+			PipedWriter pipe08 = new PipedWriter();
+			PipedWriter pipe09 = new PipedWriter();
 
 			// Instantiate Filter Threads
 			Thread fileReaderFilter = new FileReaderFilter(argv[0], pipe01);
 			Thread statusFilter = new StatusFilter(pipe01, pipe02, pipe03);
-			Thread stateFilter1 = new StateFilter("RIS", pipe02, pipe04);
-			Thread stateFilter2 = new StateFilter("DIF", pipe03, pipe05);
-			Thread mergeFilter = new MergeFilter(pipe04, pipe05, pipe06);
-			Thread fileWriterFilter = new FileWriterFilter(argv[1], pipe06);
+			Thread stateFilter1 = new StateFilter("DIF", pipe02, pipe04);
+			//Thread stateFilter2 = new StateFilter("RIS", pipe02, pipe04);
+			Thread stateFilter3 = new StateFilter("RIS", pipe03, pipe05);
+			Thread percentageFilter1 = new PercentageFilter(50, "<", pipe04, pipe06);
+			Thread percentageFilter2 = new PercentageFilter(25, "=", pipe05, pipe07);
+			//Thread percentageFilter3 = new PercentageFilter(75, ">", pipe05, pipe08);
+			//Thread mergeFilter = new MergeFilter(pipe07, pipe08, pipe09);
+			Thread fileWriterFilter1 = new FileWriterFilter(argv[1], pipe06);
+			Thread fileWriterFilter2 = new FileWriterFilter(argv[2], pipe09);
 
 			// Start the threads
 			fileReaderFilter.start();
 			statusFilter.start();
 			stateFilter1.start();
-			stateFilter2.start();
-			mergeFilter.start();
-			fileWriterFilter.start();
+			//stateFilter2.start();
+			stateFilter3.start();
+			percentageFilter1.start();
+			percentageFilter2.start();
+			//percentageFilter3.start();
+			//mergeFilter.start();
+			fileWriterFilter1.start();
+			fileWriterFilter2.start();
 			
 		}  // if
 		

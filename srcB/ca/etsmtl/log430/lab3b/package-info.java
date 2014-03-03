@@ -16,4 +16,4 @@
  * @author Roger Champagne - ETS - 2002-2013
  * @version 2013-Oct-18
  */
-package ca.etsmtl.log430.lab3;
+package ca.etsmtl.log430.lab3b;
