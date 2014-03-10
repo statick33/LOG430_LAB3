@@ -139,7 +139,6 @@ public class FileWriterFilter extends Thread {
 					} else {
 						if (integerCharacter1 == '\n') // end of line
 						{
-							lineOfText1 = filterOutput(lineOfText1);
 							System.out.println("FileWriterFilter:: Received: "
 									+ lineOfText1 + " on input pipe.");
 							write1 = true;
@@ -163,6 +162,7 @@ public class FileWriterFilter extends Thread {
 		} // try
 
 		catch (Exception error) {
+			error.printStackTrace();
 			System.out.println("FileWriterFilter:: Interrupted.");
 		} // catch
 
@@ -191,13 +191,5 @@ public class FileWriterFilter extends Thread {
 		} // try/catch
 
 	} // run
-	
-	public String filterOutput(String line){
-		String status = line.substring(5,8);
-		String state = line.substring(25,28);
-		String percentage = line.substring(22,24);
-		String projectNumber = line.substring(0,4);
-		return status + " " + state + " " + percentage + " " + projectNumber;
-	}
 
 } // class

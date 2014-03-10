@@ -2,12 +2,6 @@ package ca.etsmtl.log430.lab3b;
 
 import java.io.PipedWriter;
 
-import ca.etsmtl.log430.lab3b.FileReaderFilter;
-import ca.etsmtl.log430.lab3b.FileWriterFilter;
-import ca.etsmtl.log430.lab3b.MergeFilter;
-import ca.etsmtl.log430.lab3b.StateFilter;
-import ca.etsmtl.log430.lab3b.StatusFilter;
-
 /**
  * This class contains the main method for assignment 3. The program
  * consists of these files:<br><br>
@@ -69,31 +63,38 @@ public class SystemInitialize {
 			PipedWriter pipe07 = new PipedWriter();
 			PipedWriter pipe08 = new PipedWriter();
 			PipedWriter pipe09 = new PipedWriter();
+			PipedWriter pipe10 = new PipedWriter();
+			PipedWriter pipe11 = new PipedWriter();
+			PipedWriter pipe12 = new PipedWriter();
 
 			// Instantiate Filter Threads
 			Thread fileReaderFilter = new FileReaderFilter(argv[0], pipe01);
 			Thread statusFilter = new StatusFilter(pipe01, pipe02, pipe03);
-			Thread stateFilter1 = new StateFilter("DIF", pipe02, pipe04);
-			//Thread stateFilter2 = new StateFilter("RIS", pipe02, pipe04);
-			Thread stateFilter3 = new StateFilter("RIS", pipe03, pipe05);
-			Thread percentageFilter1 = new PercentageFilter(50, "<", pipe04, pipe06);
-			Thread percentageFilter2 = new PercentageFilter(25, "=", pipe05, pipe07);
-			//Thread percentageFilter3 = new PercentageFilter(75, ">", pipe05, pipe08);
-			//Thread mergeFilter = new MergeFilter(pipe07, pipe08, pipe09);
-			Thread fileWriterFilter1 = new FileWriterFilter(argv[1], pipe06);
-			Thread fileWriterFilter2 = new FileWriterFilter(argv[2], pipe09);
+			Thread stateFilter1 = new StateFilter("PRO", false, pipe02, pipe04); //REG+DIF+RIS
+			Thread percentageFilter1 = new PercentageFilter(50, "<", pipe04, pipe06, null); //<50REG
+			Thread dataFilter1 = new DataFilter(pipe06, pipe11);
+			Thread fileWriterFilter1 = new FileWriterFilter(argv[1], pipe11); //ECRIT REG
+			
+			Thread stateFilter2 = new StateFilter("DIF", true, pipe03, pipe05); //CRI+RIS
+			Thread percentageFilter2 = new PercentageFilter(25, "=", pipe05, pipe07, pipe12); //=25CRI
+			Thread percentageFilter3 = new PercentageFilter(75, ">", pipe12, pipe08, null); //>75CRI
+			Thread mergeFilter1 = new MergeFilter(pipe07, pipe08, pipe09); //CRI =25 + >75
+			Thread dataFilter2 = new DataFilter(pipe09, pipe10);
+			Thread fileWriterFilter2 = new FileWriterFilter(argv[2], pipe10); //ECRIT CRI
 
 			// Start the threads
 			fileReaderFilter.start();
 			statusFilter.start();
 			stateFilter1.start();
-			//stateFilter2.start();
-			stateFilter3.start();
 			percentageFilter1.start();
-			percentageFilter2.start();
-			//percentageFilter3.start();
-			//mergeFilter.start();
+			dataFilter1.start();
 			fileWriterFilter1.start();
+			
+			stateFilter2.start();
+			percentageFilter2.start();
+			percentageFilter3.start();
+			mergeFilter1.start();
+			dataFilter2.start();
 			fileWriterFilter2.start();
 			
 		}  // if

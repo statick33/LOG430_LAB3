@@ -40,14 +40,16 @@ public class StateFilter extends Thread {
 	boolean done;
 
 	String severity;
+	boolean isSeverity;
 	PipedReader inputPipe = new PipedReader();
 	PipedWriter outputPipe = new PipedWriter();
 
-	public StateFilter(String severity, PipedWriter inputPipe,
+	public StateFilter(String severity, boolean isSeverity, PipedWriter inputPipe,
 			PipedWriter outputPipe) {
 
 		this.severity = severity;
-
+		this.isSeverity = isSeverity;
+		
 		try {
 
 			// Connect inputPipe
@@ -100,7 +102,7 @@ public class StateFilter extends Thread {
 						System.out.println("StateFilter " + severity
 								+ ":: received: " + lineOfText + ".");
 
-						if (lineOfText.indexOf(severity) != -1) {
+						if ((lineOfText.indexOf(severity) != -1 && isSeverity) || (lineOfText.indexOf(severity) == -1 && !isSeverity)) {
 
 							System.out.println("StateFilter "
 									+ severity + ":: sending: "
@@ -110,7 +112,7 @@ public class StateFilter extends Thread {
 									.write(lineOfText, 0, lineOfText.length());
 							outputPipe.flush();
 
-						} // if
+						}
 
 						lineOfText = "";
 
@@ -125,7 +127,7 @@ public class StateFilter extends Thread {
 			} // while
 
 		} catch (Exception error) {
-
+			error.printStackTrace();
 			System.out.println("StateFilter::" + severity
 					+ " Interrupted.");
 
