@@ -45,7 +45,7 @@ public class SystemInitialize {
 		// Let's make sure that input and output files are provided on the
 		// command line
 
-		if (argv.length != 2) {
+		if (argv.length != 3) {
 
 			System.out
 					.println("\n\nNombre incorrect de parametres d'entree. Utilisation:");
@@ -60,14 +60,25 @@ public class SystemInitialize {
 			PipedWriter pipe04 = new PipedWriter();
 			PipedWriter pipe05 = new PipedWriter();
 			PipedWriter pipe06 = new PipedWriter();
-
+			PipedWriter pipe07 = new PipedWriter();
+			
+			PipedWriter pipe08 = new PipedWriter();
+			PipedWriter pipe09 = new PipedWriter();
+			PipedWriter pipe10 = new PipedWriter();
+			PipedWriter pipe11 = new PipedWriter();
+			
 			// Instantiate Filter Threads
 			Thread fileReaderFilter = new FileReaderFilter(argv[0], pipe01);
 			Thread statusFilter = new StatusFilter(pipe01, pipe02, pipe03);
-			Thread stateFilter1 = new StateFilter("RIS", pipe02, pipe04);
-			Thread stateFilter2 = new StateFilter("DIF", pipe03, pipe05);
+			Thread stateFilter1 = new StateFilter("RIS", pipe02, pipe04, pipe08);
+			Thread stateFilter2 = new StateFilter("DIF", pipe03, pipe05, pipe09);
 			Thread mergeFilter = new MergeFilter(pipe04, pipe05, pipe06);
-			Thread fileWriterFilter = new FileWriterFilter(argv[1], pipe06);
+			Thread dataFilter = new DataFilter(pipe06, pipe07);
+			Thread fileWriterFilter = new FileWriterFilter(argv[1], pipe07);
+			
+			Thread mergeFilter2 = new MergeFilter(pipe08, pipe09, pipe10);
+			Thread dataFilter2 = new DataFilter(pipe10, pipe11);
+			Thread fileWriterFilter2 = new FileWriterFilter(argv[2], pipe11);
 
 			// Start the threads
 			fileReaderFilter.start();
@@ -75,7 +86,12 @@ public class SystemInitialize {
 			stateFilter1.start();
 			stateFilter2.start();
 			mergeFilter.start();
+			dataFilter.start();
 			fileWriterFilter.start();
+			
+			mergeFilter2.start();
+			dataFilter2.start();
+			fileWriterFilter2.start();
 			
 		}  // if
 		

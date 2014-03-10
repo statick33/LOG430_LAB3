@@ -42,9 +42,10 @@ public class StateFilter extends Thread {
 	String severity;
 	PipedReader inputPipe = new PipedReader();
 	PipedWriter outputPipe = new PipedWriter();
+	PipedWriter outputPipe2 = new PipedWriter();
 
 	public StateFilter(String severity, PipedWriter inputPipe,
-			PipedWriter outputPipe) {
+			PipedWriter outputPipe,PipedWriter outputPipe2) {
 
 		this.severity = severity;
 
@@ -58,6 +59,11 @@ public class StateFilter extends Thread {
 			// Connect outputPipe
 			this.outputPipe = outputPipe;
 			System.out.println("StateFilter " + severity
+					+ ":: connected to downstream filter.");
+			
+			// Connect outputPipe
+			this.outputPipe2 = outputPipe2;
+			System.out.println("StateFilter2 " + severity
 					+ ":: connected to downstream filter.");
 
 		} catch (Exception Error) {
@@ -110,7 +116,16 @@ public class StateFilter extends Thread {
 									.write(lineOfText, 0, lineOfText.length());
 							outputPipe.flush();
 
-						} // if
+						}
+						else
+						{
+							System.out.println("StateFilter "
+									+ severity + ":: sending: "
+									+ lineOfText + " to output pipe.");
+							lineOfText += new String(characterValue);
+							outputPipe2.write(lineOfText, 0, lineOfText.length());
+							outputPipe2.flush();
+						}
 
 						lineOfText = "";
 
@@ -139,6 +154,10 @@ public class StateFilter extends Thread {
 
 			outputPipe.close();
 			System.out.println("StateFilter " + severity
+					+ ":: output pipe closed.");
+			
+			outputPipe2.close();
+			System.out.println("StateFilter2 " + severity
 					+ ":: output pipe closed.");
 
 		} catch (Exception error) {
