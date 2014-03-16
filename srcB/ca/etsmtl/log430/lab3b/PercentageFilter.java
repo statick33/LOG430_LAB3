@@ -43,9 +43,10 @@ public class PercentageFilter extends Thread {
 	String operation;
 	PipedReader inputPipe = new PipedReader();
 	PipedWriter outputPipe = new PipedWriter();
+	PipedWriter outputPipe2 = new PipedWriter();
 
 	public PercentageFilter(int percentage, String operation, PipedWriter inputPipe,
-			PipedWriter outputPipe) {
+			PipedWriter outputPipe, PipedWriter outputPipe2) {
 
 		this.percentage = percentage;
 		this.operation = operation;
@@ -59,6 +60,11 @@ public class PercentageFilter extends Thread {
 
 			// Connect outputPipe
 			this.outputPipe = outputPipe;
+			System.out.println("PercentageFilter " + percentage
+					+ ":: connected to downstream filter.");
+
+			// Connect outputPipe
+			this.outputPipe2 = outputPipe2;
 			System.out.println("PercentageFilter " + percentage
 					+ ":: connected to downstream filter.");
 
@@ -102,7 +108,7 @@ public class PercentageFilter extends Thread {
 						System.out.println("PercentageFilter " + percentage
 								+ ":: received: " + lineOfText + ".");
 
-						
+
 						if (percentageIsOk(lineOfText.substring(22,24))) {
 
 							System.out.println("PercentageFilter "
@@ -113,7 +119,18 @@ public class PercentageFilter extends Thread {
 									.write(lineOfText, 0, lineOfText.length());
 							outputPipe.flush();
 
-						} // if
+						}
+						else{
+							System.out.println("PercentageFilter2 "
+									+ percentage + ":: sending: "
+									+ lineOfText + " to output pipe.");
+							lineOfText += new String(characterValue);
+							if(outputPipe2 != null){
+								outputPipe2
+								.write(lineOfText, 0, lineOfText.length());
+								outputPipe2.flush();
+							}
+						}
 
 						lineOfText = "";
 
@@ -128,7 +145,7 @@ public class PercentageFilter extends Thread {
 			} // while
 
 		} catch (Exception error) {
-
+			error.printStackTrace();
 			System.out.println("PercentageFilter::" + percentage
 					+ " Interrupted.");
 
@@ -144,6 +161,12 @@ public class PercentageFilter extends Thread {
 			System.out.println("PercentageFilter " + percentage
 					+ ":: output pipe closed.");
 
+			if(outputPipe2 != null){
+				outputPipe2.close();
+				System.out.println("PercentageFilter " + percentage
+						+ ":: output pipe closed.");
+			}
+
 		} catch (Exception error) {
 
 			System.out.println("PercentageFilter " + percentage
@@ -152,10 +175,10 @@ public class PercentageFilter extends Thread {
 		} // try/catch
 
 	} // run
-	
+
 	private boolean percentageIsOk(String textPercentage){
 		int percentageProject = Integer.parseInt(textPercentage);
-		
+
 		if(operation == "="){
 			if(percentageProject == percentage)
 				return true;
@@ -168,7 +191,7 @@ public class PercentageFilter extends Thread {
 			if(percentageProject > percentage)
 				return true;
 		}
-			
+
 		return false;
 	}
 

@@ -31,7 +31,7 @@ public class FileReaderFilter extends Thread {
 	// Create local pipe to that will connect to downstream filter
 	PipedWriter outputPipe1;
 	File inputFile;
-	
+
 	public FileReaderFilter(String fileName, PipedWriter OutputPipe1) {
 		// Lets make sure that file name is provided
 
@@ -49,7 +49,7 @@ public class FileReaderFilter extends Thread {
 			} catch (Exception Error) {
 				System.out.println("FileReaderFilter:: Error connecting output pipe.");
 			} // catch
-			
+
 			// Open input file. The input file is a field oriented and
 			// space-separated. The fields are as follows:
 			//
@@ -70,7 +70,7 @@ public class FileReaderFilter extends Thread {
 			}
 		}
 	}
-		
+
 	public void run() {
 		String LineOfText;
 		try {
@@ -123,7 +123,7 @@ public class FileReaderFilter extends Thread {
 		} catch (Exception Error) {
 			System.out.println("FileReaderFilter:: error closing pipes.");
 		} // try/catch
-		
+
 	} // run()
-	
+
 } // FileReaderFilter
